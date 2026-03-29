@@ -17,11 +17,12 @@ sub_count = 0
 
 def main():
 	#Set up the API and gpio pins
-	with open('api.txt') as api_file:
-		API_KEY = api_file.readline()
+	with open('cfg.txt') as cfg_file:
+		API_KEY = cfg_file.readline()
+		yt_handle = cfg_file.readline()
 	youtube = googleapiclient.discovery.build("youtube","v3",developerKey = API_KEY)
 	global request
-	request = youtube.channels().list(part="statistics", forHandle="MichaelReeves")
+	request = youtube.channels().list(part="statistics", forHandle=yt_handle)
 	global h
 	h = lgpio.gpiochip_open(0)
 	for segp in segment_pins:
