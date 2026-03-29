@@ -80,7 +80,7 @@ def draw_subs():
 		digit_pattern = seven_seg_outputs[curr_digit]
 		for j, seg_pin in enumerate(segment_pins):
 			lgpio.gpio_write(h,seg_pin,int(digit_pattern[j]))
-		if i == decimal_place:
+		if i == decimal_place and int(sub_count) >= 1000:
 			lgpio.gpio_write(h,16,1)
 		lgpio.gpio_write(h, digit_pins[i], 0)
 		time.sleep(0.002)
