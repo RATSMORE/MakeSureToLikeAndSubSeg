@@ -20,7 +20,7 @@ def main():
 		API_KEY = api_file.readline()
 	youtube = googleapiclient.discovery.build("youtube","v3",developerKey = API_KEY)
 	global request
-	request = youtube.channels().list(part="statistics", forHandle="PewDiePie")
+	request = youtube.channels().list(part="statistics", forHandle="THERATSMORE")
 	global h
 	h = lgpio.gpiochip_open(0)
 	for segp in segment_pins:
@@ -33,15 +33,15 @@ def main():
 	while True:
 		convert_subs()
 		draw_subs()
-		#print(segment_output)
-		time.sleep(1)
+#		print(segment_output)
+		#time.sleep(1)
 
 def get_sub_count():
 	global sub_count
 	while not stop.is_set():
 		response = request.execute()
 		sub_count = response['items'][0]['statistics']['subscriberCount']
-		time.sleep(15) #delay between calls
+		stop.wait(10) #delay between calls
 
 def convert_subs():
 	global sub_count
@@ -62,12 +62,21 @@ def convert_subs():
 
 def draw_subs():
 	global h
-	for digit in segment_output:
-		for segments in segment_pins:
-			lgpio.gpio_write(h,segments,int(seven_seg_outputs[digit][segment_pins.index(segments)]))
-
+	for i in range(4):
+		curr_digit = str(segment_output[i])
+		for dpin in digit_pins:
+			lgpio.gpio_write(h,dpin,1)
+		digit_pattern = seven_seg_outputs[curr_digit]
+		for j, seg_pin in enumerate(segment_pins):
+			lgpio.gpio_write(h,seg_pin,int(digit_pattern[j]))
+		lgpio.gpio_write(h, digit_pins[i], 0)
+		time.sleep(0.005)
+#	print("drew digit")
 
 try:
 	main()
 except KeyboardInterrupt:
-	pass	
+	for segp in segment_pins:
+		lgpio.gpio_write(h,segp,0)
+	stop.set()
+	data_thread.join()

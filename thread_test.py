@@ -18,6 +18,7 @@ def get_sub_count(): #just calls the youtube API to get subs
 		sub_count = response['items'][0]['statistics']['subscriberCount']
 		#sub_count += 1
 		print(sub_count)
+		print(type(sub_count))
 		time.sleep(15)
 
 
@@ -39,9 +40,9 @@ def main():
 	)
 	data_thread = threading.Thread(target=get_sub_count)
 	data_thread.start()
-	while True:
-		#print(sub_count)
-		convert_subs()
+#	while True:
+#		print(sub_count)
+		#convert_subs()
 
 
 if __name__ == "__main__":
